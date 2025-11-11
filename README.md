@@ -213,7 +213,7 @@ To https://github.com/yourname/my-next-app.git
 
 要重新使用這個專案，只要：
 
-git clone https://github.com/yourname/my-next-app.git
+git clone https://github.com/bluetyp1014/my-next-app.git
 cd my-next-app
 npm install
 npm run dev

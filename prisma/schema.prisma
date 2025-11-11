@@ -1,0 +1,489 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model AccommodationType {
+  AccommodationId Int            @id(map: "PK__Accommod__DBB30A5119C69E71") @default(autoincrement())
+  ToneId          Int
+  ToneCode        String         @db.NVarChar(50)
+  Type            String?        @db.NVarChar(100)
+  Rating          Int?
+  Features        String?        @db.NVarChar(500)
+  Examples        String?        @db.NVarChar(300)
+  PriceRange      String?        @db.NVarChar(50)
+  WhenToChoose    String?        @db.NVarChar(200)
+  AvoidReason     String?        @db.NVarChar(200)
+  CreateDate      DateTime?      @db.DateTime
+  CreateUser      String?        @db.NVarChar(50)
+  UpdateDate      DateTime?      @db.DateTime
+  UpdateUser      String?        @db.NVarChar(50)
+  ToneDictionary  ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_AccommodationType_ToneDictionary")
+}
+
+model ActivityType {
+  ActivityId     Int            @id(map: "PK__Activity__45F4A79173FE05C1") @default(autoincrement())
+  ToneId         Int
+  ToneCode       String         @db.NVarChar(50)
+  Category       String?        @db.NVarChar(50)
+  Name           String?        @db.NVarChar(100)
+  Description    String?        @db.NVarChar(300)
+  Rating         Int?
+  Examples       String?        @db.NVarChar(300)
+  CreateDate     DateTime?      @db.DateTime
+  CreateUser     String?        @db.NVarChar(50)
+  UpdateDate     DateTime?      @db.DateTime
+  UpdateUser     String?        @db.NVarChar(50)
+  ToneDictionary ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_ActivityType_ToneDictionary")
+}
+
+model BehaviorPatterns {
+  BehaviorId        Int            @id(map: "PK__Behavior__361B21A7A41362A5") @default(autoincrement())
+  ToneId            Int
+  ToneCode          String         @db.NVarChar(50)
+  Accommodation     String?        @db.NVarChar(200)
+  Dining            String?        @db.NVarChar(200)
+  Attractions       String?        @db.NVarChar(200)
+  Transportation    String?        @db.NVarChar(200)
+  DailySchedule     String?        @db.NVarChar(200)
+  Shopping          String?        @db.NVarChar(200)
+  Photography       String?        @db.NVarChar(200)
+  SocialInteraction String?        @db.NVarChar(200)
+  CreateDate        DateTime?      @db.DateTime
+  CreateUser        String?        @db.NVarChar(50)
+  UpdateDate        DateTime?      @db.DateTime
+  UpdateUser        String?        @db.NVarChar(50)
+  ToneDictionary    ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_BehaviorPatterns_ToneDictionary")
+}
+
+model BudgetGuidelines {
+  BudgetId             Int            @id(map: "PK__BudgetGu__E38E79246629E506") @default(autoincrement())
+  ToneId               Int
+  ToneCode             String         @db.NVarChar(50)
+  AllocationPrinciples String?        @db.NVarChar(500)
+  SavingTips           String?        @db.NVarChar(500)
+  CreateDate           DateTime?      @db.DateTime
+  CreateUser           String?        @db.NVarChar(50)
+  UpdateDate           DateTime?      @db.DateTime
+  UpdateUser           String?        @db.NVarChar(50)
+  ToneDictionary       ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_BudgetGuidelines_ToneDictionary")
+  BudgetTier           BudgetTier[]
+}
+
+model BudgetTier {
+  TierId                  Int               @id(map: "PK__BudgetTi__362F561DBB6755ED") @default(autoincrement())
+  BudgetId                Int?
+  TierType                String?           @db.NVarChar(50)
+  TotalRange              String?           @db.NVarChar(50)
+  AccommodationPct        Int?
+  AccommodationAmt        String?           @db.NVarChar(50)
+  DiningPct               Int?
+  DiningAmt               String?           @db.NVarChar(50)
+  ActivitiesPct           Int?
+  ActivitiesAmt           String?           @db.NVarChar(50)
+  TransportationPct       Int?
+  TransportationAmt       String?           @db.NVarChar(50)
+  RecommendedDestinations String?           @db.NVarChar(300)
+  BudgetGuidelines        BudgetGuidelines? @relation(fields: [BudgetId], references: [BudgetId], onDelete: NoAction, onUpdate: NoAction, map: "FK__BudgetTie__Budge__4BAC3F29")
+}
+
+model ChatConversation {
+  ConversationId                            BigInt       @id(map: "PK_ChatConversation") @default(autoincrement())
+  Member1Id                                 Int
+  Member2Id                                 Int
+  LastMessageId                             BigInt?
+  LastMessageTime                           DateTime?    @db.DateTime
+  Member1UnreadCount                        Int
+  Member2UnreadCount                        Int
+  Member1DeletedTime                        DateTime?    @db.DateTime
+  Member2DeletedTime                        DateTime?    @db.DateTime
+  CreateDate                                DateTime     @db.DateTime
+  UpdateDate                                DateTime?    @db.DateTime
+  ChatMessage                               ChatMessage? @relation(fields: [LastMessageId], references: [MessageId], onDelete: NoAction, onUpdate: NoAction, map: "FK_ChatConversation_LastMessage")
+  Member_ChatConversation_Member1IdToMember Member       @relation("ChatConversation_Member1IdToMember", fields: [Member1Id], references: [MemId], onUpdate: NoAction, map: "FK_ChatConversation_Member1")
+  Member_ChatConversation_Member2IdToMember Member       @relation("ChatConversation_Member2IdToMember", fields: [Member2Id], references: [MemId], onUpdate: NoAction, map: "FK_ChatConversation_Member2")
+
+  @@unique([Member1Id, Member2Id], map: "UQ_ChatConversation_Members")
+  @@index([LastMessageTime(sort: Desc)], map: "IX_ChatConversation_LastMessageTime")
+  @@index([Member1Id], map: "IX_ChatConversation_Member1")
+  @@index([Member2Id], map: "IX_ChatConversation_Member2")
+}
+
+model ChatFile {
+  FileId           BigInt    @id(map: "PK_ChatFile") @default(autoincrement())
+  MemId            Int
+  OriginalFileName String    @db.NVarChar(255)
+  SavedFileName    String    @db.NVarChar(255)
+  FileSize         BigInt
+  FileType         String    @db.NVarChar(100)
+  FileExtension    String?   @db.NVarChar(10)
+  IsImage          Boolean
+  ThumbnailUrl     String?   @db.NVarChar(500)
+  UploadTime       DateTime  @db.DateTime
+  IsDeleted        Boolean
+  DeletedTime      DateTime? @db.DateTime
+  Member           Member    @relation(fields: [MemId], references: [MemId], onUpdate: NoAction, map: "FK_ChatFile_Member")
+
+  @@index([MemId], map: "IX_ChatFile_MemId")
+  @@index([UploadTime(sort: Desc)], map: "IX_ChatFile_UploadTime")
+}
+
+model ChatMessage {
+  MessageId                             BigInt             @id(map: "PK_ChatMessage") @default(autoincrement())
+  SenderId                              Int
+  ReceiverId                            Int
+  MessageType                           String             @db.NVarChar(20)
+  Content                               String?            @db.NVarChar(Max)
+  FileId                                Int?
+  IsRead                                Boolean
+  ReadTime                              DateTime?          @db.DateTime
+  IsDeleted                             Boolean
+  DeletedBy                             Int?
+  DeletedTime                           DateTime?          @db.DateTime
+  ReplyToMessageId                      BigInt?
+  SendTime                              DateTime           @db.DateTime
+  CreateDate                            DateTime           @db.DateTime
+  UpdateDate                            DateTime?          @db.DateTime
+  UpdateUser                            Int?
+  ChatConversation                      ChatConversation[]
+  Member_ChatMessage_ReceiverIdToMember Member             @relation("ChatMessage_ReceiverIdToMember", fields: [ReceiverId], references: [MemId], onUpdate: NoAction, map: "FK_ChatMessage_Receiver")
+  ChatMessage                           ChatMessage?       @relation("ChatMessageToChatMessage", fields: [ReplyToMessageId], references: [MessageId], onDelete: NoAction, onUpdate: NoAction, map: "FK_ChatMessage_ReplyTo")
+  other_ChatMessage                     ChatMessage[]      @relation("ChatMessageToChatMessage")
+  Member_ChatMessage_SenderIdToMember   Member             @relation("ChatMessage_SenderIdToMember", fields: [SenderId], references: [MemId], onUpdate: NoAction, map: "FK_ChatMessage_Sender")
+
+  @@index([ReceiverId, IsRead], map: "IX_ChatMessage_IsRead")
+  @@index([ReceiverId], map: "IX_ChatMessage_ReceiverId")
+  @@index([SenderId], map: "IX_ChatMessage_SenderId")
+  @@index([SendTime(sort: Desc)], map: "IX_ChatMessage_SendTime")
+}
+
+model CommunicationTips {
+  CommunicationTipsId  Int                    @id(map: "PK__Communic__61B20601C8A56FF5") @default(autoincrement())
+  ToneId               Int
+  ToneCode             String                 @db.NVarChar(50)
+  CreateDate           DateTime?              @db.DateTime
+  CreateUser           String?                @db.NVarChar(50)
+  UpdateDate           DateTime?              @db.DateTime
+  UpdateUser           String?                @db.NVarChar(50)
+  ToneDictionary       ToneDictionary         @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_CommunicationTips_ToneDictionary")
+  ConflictScenarios    ConflictScenarios[]
+  DuringTripPhrases    DuringTripPhrases[]
+  DuringTripPrinciples DuringTripPrinciples[]
+  PreTripChecklist     PreTripChecklist[]
+}
+
+model CompanionCompatibility {
+  CompatibilityId Int            @id(map: "PK__Companio__D56A70EBDA6074A9") @default(autoincrement())
+  ToneId          Int
+  ToneCode        String         @db.NVarChar(50)
+  MatchToneId     Int
+  MatchToneCode   String         @db.NVarChar(50)
+  MatchType       String?        @db.NVarChar(20)
+  Overall         Int?
+  Pace            Int?
+  Interests       Int?
+  MatchValues     Int?
+  Communication   Int?
+  Conflict        Int?
+  Pros            String?        @db.NVarChar(Max)
+  Cons            String?        @db.NVarChar(Max)
+  Tips            String?        @db.NVarChar(Max)
+  IdealTrips      String?        @db.NVarChar(Max)
+  CreateDate      DateTime?      @db.DateTime
+  CreateUser      String?        @db.NVarChar(50)
+  UpdateDate      DateTime?      @db.DateTime
+  UpdateUser      String?        @db.NVarChar(50)
+  ToneDictionary  ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_CompanionCompatibility_ToneDictionary")
+}
+
+model CompanionCompatibilityMatrix {
+  CompatibilityMatrixId Int            @id(map: "PK__Companio__3214EC07A09AA2DE") @default(autoincrement())
+  ToneId                Int
+  ToneCode              String         @db.NVarChar(50)
+  MatchToneId           Int
+  MatchToneCode         String         @db.NVarChar(50)
+  Overall               Int?
+  Pace                  Int?
+  Interests             Int?
+  MatchValues           Int?
+  Communication         Int?
+  Conflict              Int?
+  CreateDate            DateTime?      @db.DateTime
+  CreateUser            String?        @db.NVarChar(50)
+  UpdateDate            DateTime?      @db.DateTime
+  UpdateUser            String?        @db.NVarChar(50)
+  ToneDictionary        ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_CompanionCompatibilityMatrix_ToneDictionary")
+}
+
+model ConflictScenarios {
+  ScenarioId          Int               @id(map: "PK__Conflict__0DF6D18387E5595B") @default(autoincrement())
+  CommunicationTipsId Int
+  Situation           String?           @db.NVarChar(Max)
+  YourResponse        String?           @db.NVarChar(Max)
+  Explanation         String?           @db.NVarChar(Max)
+  CreateDate          DateTime?         @db.DateTime
+  CreateUser          String?           @db.NVarChar(50)
+  UpdateDate          DateTime?         @db.DateTime
+  UpdateUser          String?           @db.NVarChar(50)
+  CommunicationTips   CommunicationTips @relation(fields: [CommunicationTipsId], references: [CommunicationTipsId], onUpdate: NoAction, map: "FK__ConflictS__Commu__45F365D3")
+}
+
+model CoreTraits {
+  CoreTraitId      Int            @id(map: "PK__CoreTrai__27AAD328A7F896FE") @default(autoincrement())
+  ToneId           Int
+  ToneCode         String         @db.NVarChar(50)
+  PrimaryTrait     String?        @db.NVarChar(200)
+  Keyword          String?        @db.NVarChar(50)
+  TravelMotivation String?        @db.NVarChar(200)
+  TravelStyle      String?        @db.NVarChar(200)
+  Pace             Int?
+  Relaxation       Int?
+  Depth            Int?
+  Nature           Int?
+  Introspection    Int?
+  Social           Int?
+  Adventure        Int?
+  Luxury           Int?
+  Culture          Int?
+  CreateDate       DateTime?      @db.DateTime
+  CreateUser       String?        @db.NVarChar(50)
+  UpdateDate       DateTime?      @db.DateTime
+  UpdateUser       String?        @db.NVarChar(50)
+  ToneDictionary   ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_CoreTraits_ToneDictionary")
+}
+
+model DestinationRecommendation {
+  DestinationId   Int            @id(map: "PK__Destinat__DB5FE4CC9D22AC70") @default(autoincrement())
+  ToneId          Int
+  ToneCode        String         @db.NVarChar(50)
+  RankNo          Int?
+  Name            String?        @db.NVarChar(100)
+  Country         String?        @db.NVarChar(100)
+  Compatibility   Int?
+  Reasons         String?        @db.NVarChar(500)
+  BestExperiences String?        @db.NVarChar(500)
+  Duration        String?        @db.NVarChar(50)
+  BestSeason      String?        @db.NVarChar(100)
+  BudgetRange     String?        @db.NVarChar(50)
+  Highlights      String?        @db.NVarChar(300)
+  HiddenGems      String?        @db.NVarChar(300)
+  CreateDate      DateTime?      @db.DateTime
+  CreateUser      String?        @db.NVarChar(50)
+  UpdateDate      DateTime?      @db.DateTime
+  UpdateUser      String?        @db.NVarChar(50)
+  ToneDictionary  ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_DestinationRecommendation_ToneDictionary")
+}
+
+model DuringTripPhrases {
+  PhraseId            Int               @id(map: "PK__DuringTr__0DBA0E8282632385") @default(autoincrement())
+  CommunicationTipsId Int
+  Phrase              String?           @db.NVarChar(Max)
+  CreateDate          DateTime?         @db.DateTime
+  CreateUser          String?           @db.NVarChar(50)
+  UpdateDate          DateTime?         @db.DateTime
+  UpdateUser          String?           @db.NVarChar(50)
+  CommunicationTips   CommunicationTips @relation(fields: [CommunicationTipsId], references: [CommunicationTipsId], onUpdate: NoAction, map: "FK__DuringTri__Commu__4316F928")
+}
+
+model DuringTripPrinciples {
+  PrincipleId         Int               @id(map: "PK__DuringTr__258CD1D52CAC9486") @default(autoincrement())
+  CommunicationTipsId Int
+  Principle           String?           @db.NVarChar(Max)
+  CreateDate          DateTime?         @db.DateTime
+  CreateUser          String?           @db.NVarChar(50)
+  UpdateDate          DateTime?         @db.DateTime
+  UpdateUser          String?           @db.NVarChar(50)
+  CommunicationTips   CommunicationTips @relation(fields: [CommunicationTipsId], references: [CommunicationTipsId], onUpdate: NoAction, map: "FK__DuringTri__Commu__403A8C7D")
+}
+
+model Member {
+  MemId                                               Int                @id(map: "PK_Member") @default(autoincrement())
+  Email                                               String             @db.NVarChar(250)
+  MobilePhone                                         String?            @db.NVarChar(50)
+  SmsCode                                             String?            @db.NVarChar(255)
+  AuthProvider                                        String?            @db.NVarChar(50)
+  ProfilePhoto                                        String?            @db.NVarChar(255)
+  Gender                                              String?            @db.NChar(10)
+  FirstName                                           String?            @db.NVarChar(50)
+  LastName                                            String?            @db.NVarChar(50)
+  NickName                                            String?            @db.NVarChar(100)
+  BirthDate                                           DateTime?          @db.DateTime
+  City                                                String?            @db.NVarChar(100)
+  Occupation                                          String?            @db.NVarChar(100)
+  TravelFrequency                                     String?            @db.NVarChar(20)
+  SelfIntro                                           String?            @db.NVarChar(300)
+  TravelExperience                                    String?            @db.NVarChar(20)
+  CompanionPreference                                 String?            @db.NVarChar(50)
+  MatchingPreference                                  String?            @db.NVarChar(50)
+  TravelPace                                          String?            @db.NVarChar(300)
+  BudgetPreference                                    String?            @db.NVarChar(50)
+  TravelStyle                                         String?            @db.NVarChar(300)
+  BadgeLevel                                          String?            @db.NVarChar(10)
+  IsAgreeTerms                                        Boolean?
+  IsAdult                                             Boolean?
+  IsLock                                              Int
+  PasswordHash                                        String?            @db.NVarChar(256)
+  AvatarUrl                                           String?            @db.NVarChar(3000)
+  RefreshToken                                        String?            @db.NVarChar(512)
+  RefreshTokenExpiryTime                              DateTime?          @db.DateTime
+  Comment                                             String?            @db.NVarChar(50)
+  CreateDate                                          DateTime?          @db.DateTime
+  CreateUser                                          Int?
+  UpdateDate                                          DateTime?          @db.DateTime
+  UpdateUser                                          Int?
+  ChatConversation_ChatConversation_Member1IdToMember ChatConversation[] @relation("ChatConversation_Member1IdToMember")
+  ChatConversation_ChatConversation_Member2IdToMember ChatConversation[] @relation("ChatConversation_Member2IdToMember")
+  ChatFile                                            ChatFile[]
+  ChatMessage_ChatMessage_ReceiverIdToMember          ChatMessage[]      @relation("ChatMessage_ReceiverIdToMember")
+  ChatMessage_ChatMessage_SenderIdToMember            ChatMessage[]      @relation("ChatMessage_SenderIdToMember")
+  MemTone                                             MemTone[]
+  MemToneAnswer                                       MemToneAnswer[]
+  MemToneResult                                       MemToneResult[]
+}
+
+model MemTone {
+  MemToneId      Int            @id(map: "PK_MemTone") @default(autoincrement())
+  ToneId         Int
+  MemId          Int
+  ToneCode       String         @db.NVarChar(50)
+  Currently      Int?
+  CreateDate     DateTime?      @db.DateTime
+  CreateUser     String?        @db.NVarChar(50)
+  UpdateDate     DateTime?      @db.DateTime
+  UpdateUser     String?        @db.NVarChar(50)
+  Member         Member         @relation(fields: [MemId], references: [MemId], onUpdate: NoAction, map: "FK_MemTone_Member")
+  ToneDictionary ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_MemTone_ToneDictionary")
+}
+
+model MemToneAnswer {
+  MemToneAnswerId Int           @id(map: "PK__MemToneA__583A71BC6C00138B") @default(autoincrement())
+  MemId           Int
+  MemToneResultId Int
+  QuestionId      String        @db.NVarChar(50)
+  OptionId        String        @db.NVarChar(50)
+  ToneCode        String        @db.NVarChar(10)
+  CreateUser      Int
+  CreateDate      DateTime      @db.DateTime
+  UpdateUser      Int?
+  UpdateDate      DateTime?     @db.DateTime
+  IsDisable       Int?
+  Member          Member        @relation(fields: [MemId], references: [MemId], onUpdate: NoAction, map: "FK_MemToneAnswer_Member")
+  MemToneResult   MemToneResult @relation(fields: [MemToneResultId], references: [MemToneResultId], onDelete: Cascade, onUpdate: NoAction, map: "FK_MemToneAnswer_MemToneResult")
+}
+
+model MemToneResult {
+  MemToneResultId      Int             @id(map: "PK__MemToneR__95AB7EC9CC98E510") @default(autoincrement())
+  MemId                Int
+  PrimaryTone          String          @db.NVarChar(10)
+  ToneDistributionJson String?         @db.NVarChar(Max)
+  RawAnswersJson       String?         @db.NVarChar(Max)
+  CreateUser           Int
+  CreateDate           DateTime        @db.DateTime
+  UpdateUser           Int?
+  UpdateDate           DateTime?       @db.DateTime
+  IsDisable            Int?
+  MemToneAnswer        MemToneAnswer[]
+  Member               Member          @relation(fields: [MemId], references: [MemId], onUpdate: NoAction, map: "FK_MemToneResult_Member")
+}
+
+model PersonalityTraits {
+  TraitId      Int       @id(map: "PK__Personal__8D615ACF3EB6525B") @default(autoincrement())
+  ToneId       Int
+  ToneCode     String    @db.NVarChar(50)
+  Introversion Int?
+  Sensing      Int?
+  Feeling      Int?
+  Judging      Int?
+  Implications String?   @db.NVarChar(500)
+  CreateDate   DateTime? @db.DateTime
+  CreateUser   String?   @db.NVarChar(50)
+  UpdateDate   DateTime? @db.DateTime
+  UpdateUser   String?   @db.NVarChar(50)
+}
+
+model PreTripChecklist {
+  ChecklistId         Int               @id(map: "PK__PreTripC__4C1D499AD4B7774C") @default(autoincrement())
+  CommunicationTipsId Int
+  Item                String?           @db.NVarChar(Max)
+  CreateDate          DateTime?         @db.DateTime
+  CreateUser          String?           @db.NVarChar(50)
+  UpdateDate          DateTime?         @db.DateTime
+  UpdateUser          String?           @db.NVarChar(50)
+  CommunicationTips   CommunicationTips @relation(fields: [CommunicationTipsId], references: [CommunicationTipsId], onUpdate: NoAction, map: "FK__PreTripCh__Commu__3D5E1FD2")
+}
+
+model PsychologicalNeeds {
+  NeedId         Int            @id(map: "PK__Psycholo__CEDBFB58FCFFE8FC") @default(autoincrement())
+  ToneId         Int
+  ToneCode       String         @db.NVarChar(50)
+  PrimaryNeed    String?        @db.NVarChar(200)
+  SecondaryNeed  String?        @db.NVarChar(200)
+  Avoidance      String?        @db.NVarChar(200)
+  Fulfillment    String?        @db.NVarChar(200)
+  CreateDate     DateTime?      @db.DateTime
+  CreateUser     String?        @db.NVarChar(50)
+  UpdateDate     DateTime?      @db.DateTime
+  UpdateUser     String?        @db.NVarChar(50)
+  ToneDictionary ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_PsychologicalNeeds_ToneDictionary")
+}
+
+model SeasonPreferences {
+  SeasonId                Int            @id(map: "PK__SeasonPr__C1814E38CEC0BA96") @default(autoincrement())
+  ToneId                  Int
+  ToneCode                String         @db.NVarChar(50)
+  Season                  String?        @db.NVarChar(50)
+  Rating                  Int?
+  Pros                    String?        @db.NVarChar(300)
+  Cons                    String?        @db.NVarChar(300)
+  RecommendedDestinations String?        @db.NVarChar(300)
+  Tips                    String?        @db.NVarChar(300)
+  CreateDate              DateTime?      @db.DateTime
+  CreateUser              String?        @db.NVarChar(50)
+  UpdateDate              DateTime?      @db.DateTime
+  UpdateUser              String?        @db.NVarChar(50)
+  ToneDictionary          ToneDictionary @relation(fields: [ToneId], references: [ToneId], onUpdate: NoAction, map: "FK_SeasonPreferences_SeasonPreferences")
+}
+
+model ToneDictionary {
+  ToneId                       Int                            @id(map: "PK_ToneDictionary") @default(autoincrement())
+  ToneCode                     String?                        @db.NVarChar(50)
+  ToneName                     String?                        @db.NVarChar(50)
+  CreateDate                   DateTime?                      @db.DateTime
+  CreateUser                   String?                        @db.NVarChar(50)
+  UpdateDate                   DateTime?                      @db.DateTime
+  UpdateUser                   String?                        @db.NVarChar(50)
+  AccommodationType            AccommodationType[]
+  ActivityType                 ActivityType[]
+  BehaviorPatterns             BehaviorPatterns[]
+  BudgetGuidelines             BudgetGuidelines[]
+  CommunicationTips            CommunicationTips[]
+  CompanionCompatibility       CompanionCompatibility[]
+  CompanionCompatibilityMatrix CompanionCompatibilityMatrix[]
+  CoreTraits                   CoreTraits[]
+  DestinationRecommendation    DestinationRecommendation[]
+  MemTone                      MemTone[]
+  PsychologicalNeeds           PsychologicalNeeds[]
+  SeasonPreferences            SeasonPreferences[]
+  ToneProfile                  ToneProfile[]
+}
+
+model ToneProfile {
+  ToneProfileId  Int             @id(map: "PK_ToneProfile") @default(autoincrement())
+  ToneId         Int?
+  ToneCode       String          @db.NVarChar(50)
+  Name           String          @db.NVarChar(50)
+  NameEn         String          @db.NVarChar(50)
+  Icon           String?         @db.NVarChar(10)
+  Color          String?         @db.NVarChar(20)
+  Description    String?         @db.NVarChar(500)
+  CreateDate     DateTime?       @db.DateTime
+  CreateUser     String?         @db.NVarChar(50)
+  UpdateDate     DateTime?       @db.DateTime
+  UpdateUser     String?         @db.NVarChar(50)
+  ToneDictionary ToneDictionary? @relation(fields: [ToneId], references: [ToneId], onDelete: NoAction, onUpdate: NoAction, map: "FK_ToneProfile_ToneDictionary")
+}
