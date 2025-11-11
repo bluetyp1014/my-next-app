@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -7,6 +8,8 @@ export default function Home() {
         🚀 Hello, Next.js + Tailwind!
       </h1>
       <p className="mt-4 text-gray-600">你的開發環境已成功啟動。</p>
+
+      <Link href="/member">member</Link>
     </main>
   );
 }
