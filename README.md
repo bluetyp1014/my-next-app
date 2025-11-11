@@ -175,3 +175,45 @@ coverage/
 git add .
 git commit -m "Initial Next.js 16 + TypeScript + Tailwind setup"
 
+🌐 四、在 GitHub 上建立一個新 Repository
+
+1️⃣ 前往 https://github.com
+
+2️⃣ 登入後點選右上角的 「New repository」
+3️⃣ 填寫：
+
+Repository name：my-next-app
+
+Visibility：Public 或 Private 都可以
+
+不用勾「Add a README」或「Add .gitignore」（因為你已經有）
+
+按下「Create repository」。
+
+🔗 五、連結本地端與 GitHub
+
+建立完 repo 之後，GitHub 頁面會顯示一段指令，例如：
+
+git remote add origin https://github.com/bluetyp1014/my-next-app.git
+git branch -M main
+git push -u origin main
+
+✅ 六、完成！
+
+你會看到訊息：
+
+Enumerating objects: ...
+Counting objects: ...
+Compressing objects: ...
+Writing objects: ...
+To https://github.com/yourname/my-next-app.git
+ * [new branch]      main -> main
+
+ 🌈 七、之後在其他電腦使用時
+
+要重新使用這個專案，只要：
+
+git clone https://github.com/yourname/my-next-app.git
+cd my-next-app
+npm install
+npm run dev
