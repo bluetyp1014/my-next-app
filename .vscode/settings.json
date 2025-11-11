@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+
+  // 🚫 移除 postcss 語法關聯
+  // "files.associations": { "*.css": "postcss" },
+
+  // ✅ 仍可保持 Tailwind 提示
+  "editor.quickSuggestions": { "strings": true }
+}
